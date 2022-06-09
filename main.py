@@ -14,6 +14,9 @@ MAX_VAL = 500
 
 
 class Info:
+    FONT = pygame.font.SysFont('Arial', 50)
+    BLACK = 0, 0, 0
+
     GRADIENTS = [
         (128, 128, 128),
         (160, 160, 160),
@@ -37,8 +40,10 @@ def generate_list():
     return lst
 
 
-def draw_list(info, n1, n2):
+def draw_list(info, n1, n2, name):
     info.window.fill("WHITE")
+    title = info.FONT.render(name, 1, info.BLACK)
+    info.window.blit(title, (info.width / 2 - title.get_width() / 2, 10))
     lst = info.lst
 
     for i, val in enumerate(lst):
@@ -64,8 +69,27 @@ def bubble_sort(info):
 
             if n1 > n2:
                 lst[j], lst[j + 1] = lst[j + 1], lst[j]
-                draw_list(info, j, j + 1)
+                draw_list(info, j, j + 1, "Bubble Sort")
                 yield True
+
+    return lst
+
+
+def insertion_sort(info):
+    lst = info.lst
+
+    for i in range(1, len(lst)):
+        key = lst[i]
+
+        while True:
+            sorting = i > 0 and lst[i - 1] > key
+            if not sorting:
+                break
+            lst[i] = lst[i - 1]
+            i -= 1
+            lst[i] = key
+            draw_list(info, i - 1, i, "Insertion Sort")
+            yield True
 
     return lst
 
@@ -80,20 +104,22 @@ def main():
     sorting = True
 
     while run:
-        clock.tick(10)
+        clock.tick(50)
         pygame.display.update()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-        generator = bubble_sort(info)
+        #generator = bubble_sort(info)
+        generator = insertion_sort(info)
         if sorting:
             try:
                 next(generator)
             except StopIteration:
                 sorting = False
+                draw_list(info, -1, -1, "Insertion Sort")
 
-        bubble_sort(info)
+        insertion_sort(info)
 
     pygame.quit()
 
