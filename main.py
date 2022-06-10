@@ -61,65 +61,94 @@ def draw_list(info, n1, n2, name):
 
 
 def bubble_sort(info):
+    clock = pygame.time.Clock()
     lst = info.lst
     for i in range(len(lst) - 1):
+        #clock.tick(100)
         for j in range(len(lst) - i - 1):
+            #clock.tick(100)
             n1 = lst[j]
             n2 = lst[j + 1]
 
             if n1 > n2:
                 lst[j], lst[j + 1] = lst[j + 1], lst[j]
                 draw_list(info, j, j + 1, "Bubble Sort")
-                yield True
+                pygame.display.update()
 
-    return lst
+    draw_list(info, -1, -1, "Bubble Sort")
 
 
 def insertion_sort(info):
+    clock = pygame.time.Clock()
     lst = info.lst
 
     for i in range(1, len(lst)):
+        #clock.tick(100)
         key = lst[i]
 
-        while True:
-            sorting = i > 0 and lst[i - 1] > key
-            if not sorting:
-                break
+        while i > 0 and lst[i - 1] > key:
+            #clock.tick(100)
             lst[i] = lst[i - 1]
             i -= 1
             lst[i] = key
             draw_list(info, i - 1, i, "Insertion Sort")
-            yield True
+            pygame.display.update()
 
-    return lst
+    draw_list(info, -1, -1, "Insertion Sort")
+
+
+def selection_sort(info):
+    clock = pygame.time.Clock()
+    lst = info.lst
+
+    for i in range(len(lst)):
+        #clock.tick(100)
+        min_index = i
+        for j in range(i + 1, len(lst)):
+            #clock.tick(100)
+            draw_list(info, i, j, "Selection Sort")
+            pygame.display.update()
+            if lst[j] < lst[min_index]:
+                min_index = j
+
+        lst[i], lst[min_index] = lst[min_index], lst[i]
+        draw_list(info, i, min_index, "Selection Sort")
+        pygame.display.update()
+
+    draw_list(info, -1, -1, "Selection Sort")
+
+
+def reset():
+    lst = generate_list()
+    info = Info(lst)
+    draw_list(info, -1, -1, "")
+    return info
 
 
 def main():
     run = True
     clock = pygame.time.Clock()
-
-    lst = generate_list()
-    info = Info(lst)
-    generator = None
+    algorithm = ""
+    info = reset()
     sorting = True
 
     while run:
-        clock.tick(50)
+        clock.tick(60)
         pygame.display.update()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-        #generator = bubble_sort(info)
-        generator = insertion_sort(info)
-        if sorting:
-            try:
-                next(generator)
-            except StopIteration:
-                sorting = False
-                draw_list(info, -1, -1, "Insertion Sort")
 
-        insertion_sort(info)
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_b:
+                    bubble_sort(info)
+                if event.key == pygame.K_i:
+                    insertion_sort(info)
+                if event.key == pygame.K_s:
+                    selection_sort(info)
+                if event.key == pygame.K_r:
+                    info = reset()
 
     pygame.quit()
 
